@@ -4,46 +4,78 @@ const fs = require('fs');
 // const bodyParser = require('body-parser');
 
 /* GET home page. */
-router.get('/', function(req, res, next) {
+router.get('/', function(req, res, next) {  
+  console.log(global.arrayIndex);
   res.render('index', { title: 'Generate File' });
 });
 
 router.post('/file_generate', function(req, res, next) {
   var phrase = req.body.frase;
-  console.log(phrase);
-  var phraseEncripted = [];
+  var phraseEncripted = '';
   var chave = req.body.chave;
-  console.log(chave);
   var sizeKey = chave.length; //5
   var sizePhrase = phrase.length;
   var j = 0;
   for(var i = 0; i<sizePhrase; i++) {
     var indice = global.arrayIndex.indexOf(phrase[i]);
     indice = parseInt(indice) + parseInt(chave[j]);
-    console.log('Indice:' +indice);
-    console.log(phrase[i]);
-    console.log(chave[j]);
     
     if( indice >= 80 ) {
       indice = indice - 80;
     }
-    phraseEncripted[i] = global.arrayIndex[indice];
+    phraseEncripted+= ''+global.arrayIndex[indice];
     j++;
     if(j>=sizeKey) {
       j=0;
     }
   }
 
-  console.log(phraseEncripted);
+  res.send(phraseEncripted);
 
-  // // write to a new file named 2pac.txt
-  // fs.writeFile(chave+'.txt', phrase, (err) => {  
-  //     // throws an error, you could also catch it here
-  //     if (err) throw err;
+  fs.writeFile(chave+'.txt', phraseEncripted, (err) => {
+      if (err) throw err;
+      console.log('Arquivo salvo!');
+  });
+});
 
-  //     // success case, the file was saved
-  //     console.log('Lyric saved!');
-  // });
+router.post('/file_upload', function(req, res, next){
+  var formidable = require('formidable');
+  var fs = require('fs');
+  var form = new formidable.IncomingForm();
+  form.parse(req, function (err, fields, files) {
+    var oldpath = files.filetoupload.path;
+    var newpath = './public/files_uploaded/' + files.filetoupload.name;
+    fs.rename(oldpath, newpath, function (err) {
+      if (err) throw err;
+      var chaveName = files.filetoupload.name.split('.');      
+      fs.readFile(newpath, 'utf-8', function (erro, data) {
+          if(erro) throw erro;
+         console.log('Arquivo enviado e armazenado. Chave ' + chaveName[0] + '. Conteúdo: ' + data);
+          
+          var phrase = '';
+          var phraseEncripted = data;
+          var chave = chaveName[0];
+          var sizeKey = chave.length; //5
+          var sizePhraseEnc = phraseEncripted.length;
+          var j = 0;
+          for(var i = 0; i<sizePhraseEnc; i++) {
+            var indice = global.arrayIndex.indexOf(phraseEncripted[i]);
+            indice = parseInt(indice) - parseInt(chave[j]);
+            
+            if( indice < 0 ) {
+              indice = indice + 80;
+              console.log(indice);
+            }
+            phrase+= ''+global.arrayIndex[indice];
+            j++;
+            if(j>=sizeKey) {
+              j=0;
+            }
+          }
+          res.send('Arquivo enviado e armazenado. Chave ' + chaveName[0] + '. Conteúdo: ' + data + '. Decriptado: ' + phrase);
+      });
+    });
+  });
 });
 
 module.exports = router;

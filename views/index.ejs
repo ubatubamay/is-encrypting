@@ -15,5 +15,11 @@
       <textarea name="frase"></textarea>
       <button type="submit">Gerar arquivo</button>
     </form>
+    <h1><%= title %></h1>
+    <p>Welcome to <%= title %></p>
+    <form action="/file_upload" method="post" enctype="multipart/form-data">
+      <input type="file" name="filetoupload"><br>
+      <input type="submit">
+    </form>
   </body>
 </html>
