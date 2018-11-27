@@ -6,7 +6,7 @@ const fs = require('fs');
 /* GET home page. */
 router.get('/', function(req, res, next) {  
   console.log(global.arrayIndex);
-  res.render('index', { title: 'Generate File' });
+  res.render('index', { title: 'IS-Encrypting' });
 });
 
 router.post('/file_generate', function(req, res, next) {

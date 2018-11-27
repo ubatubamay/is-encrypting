@@ -6,7 +6,7 @@
   </head>
   <body>
     <h1><%= title %></h1>
-    <p>Welcome to <%= title %></p>
+    <h3>Gerar arquivo encriptado</h3>
     <form name="form_encriptar" action="/file_generate" method="POST">
       <label>Chave:</label>
       <input type="number" name="chave">
@@ -15,8 +15,7 @@
       <textarea name="frase"></textarea>
       <button type="submit">Gerar arquivo</button>
     </form>
-    <h1><%= title %></h1>
-    <p>Welcome to <%= title %></p>
+    <h3>Decriptar arquivo</h3>
     <form action="/file_upload" method="post" enctype="multipart/form-data">
       <input type="file" name="filetoupload"><br>
       <input type="submit">
