@@ -10,15 +10,28 @@
     <form name="form_encriptar" action="/file_generate" method="POST">
       <label>Chave:</label>
       <input type="number" name="chave">
-      <br>
+      <br><br>
       <label>Frase:</label>
       <textarea name="frase"></textarea>
+      <br><br>
       <button type="submit">Gerar arquivo</button>
+      <% if (urlFile != '') { %>
+        <label>Arquivo encriptado</label>
+        <p><a href="<%= urlFile %>">download</a></p>
+      <% } %>
+      <% if (message != '') { %>
+        <p style="color:red"><%= message %></p>
+      <% } %>
     </form>
     <h3>Decriptar arquivo</h3>
     <form action="/file_upload" method="post" enctype="multipart/form-data">
-      <input type="file" name="filetoupload"><br>
+      <input type="file" name="filetoupload">
+      <br><br>
       <input type="submit">
+      <br>
+      <% if (decriptedFile != '') { %>
+        <p><%= decriptedFile %></p>
+      <% } %>
     </form>
   </body>
 </html>

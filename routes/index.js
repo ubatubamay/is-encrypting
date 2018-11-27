@@ -6,22 +6,40 @@ const fs = require('fs');
 /* GET home page. */
 router.get('/', function(req, res, next) {  
   console.log(global.arrayIndex);
-  res.render('index', { title: 'IS-Encrypting' });
+  res.render('index', { title: 'IS-Encrypting', 
+                        urlFile: '', 
+                        decriptedFile: '',
+                        message: '' });
 });
 
 router.post('/file_generate', function(req, res, next) {
   var phrase = req.body.frase;
   var phraseEncripted = '';
   var chave = req.body.chave;
+
   var sizeKey = chave.length; //5
+  if (sizeKey < 5){
+    return res.render('index', { title: 'IS-Encrypting', 
+                          urlFile: '', 
+                          decriptedFile: '',
+                          message: 'A chave deve possuir pelo menos 5 números' });
+  }
+  
   var sizePhrase = phrase.length;
+  if (sizePhrase < 3){
+    return res.render('index', { title: 'IS-Encrypting', 
+                          urlFile: '', 
+                          decriptedFile: '',
+                          message: 'A frase deve possuir pelo menos 3 caracteres' });
+  }
+
   var j = 0;
   for(var i = 0; i<sizePhrase; i++) {
     var indice = global.arrayIndex.indexOf(phrase[i]);
     indice = parseInt(indice) + parseInt(chave[j]);
     
-    if( indice >= 80 ) {
-      indice = indice - 80;
+    if( indice >= 79 ) {
+      indice = indice - 79;
     }
     phraseEncripted+= ''+global.arrayIndex[indice];
     j++;
@@ -30,12 +48,20 @@ router.post('/file_generate', function(req, res, next) {
     }
   }
 
-  res.send(phraseEncripted);
-
-  fs.writeFile(chave+'.txt', phraseEncripted, (err) => {
+  var newPath = './public/files_generated/'+chave+'.txt';
+  fs.writeFile(newPath, phraseEncripted, (err) => {
       if (err) throw err;
-      console.log('Arquivo salvo!');
+      res.render('index', { title: 'IS-Encrypting', 
+                            urlFile: newPath, 
+                            decriptedFile: '',
+                            message: '' });
   });
+  
+});
+
+router.get('/:file(*)', function(req, res, next){
+  var file = req.params.file;
+  res.download(file);
 });
 
 router.post('/file_upload', function(req, res, next){
@@ -50,7 +76,6 @@ router.post('/file_upload', function(req, res, next){
       var chaveName = files.filetoupload.name.split('.');      
       fs.readFile(newpath, 'utf-8', function (erro, data) {
           if(erro) throw erro;
-         console.log('Arquivo enviado e armazenado. Chave ' + chaveName[0] + '. Conteúdo: ' + data);
           
           var phrase = '';
           var phraseEncripted = data;
@@ -63,8 +88,7 @@ router.post('/file_upload', function(req, res, next){
             indice = parseInt(indice) - parseInt(chave[j]);
             
             if( indice < 0 ) {
-              indice = indice + 80;
-              console.log(indice);
+              indice = indice + 79;
             }
             phrase+= ''+global.arrayIndex[indice];
             j++;
@@ -72,7 +96,10 @@ router.post('/file_upload', function(req, res, next){
               j=0;
             }
           }
-          res.send('Arquivo enviado e armazenado. Chave ' + chaveName[0] + '. Conteúdo: ' + data + '. Decriptado: ' + phrase);
+          res.render('index', { title: 'IS-Encrypting', 
+                                urlFile: '', 
+                                decriptedFile: 'Conteúdo decriptado: ' + phrase,
+                                message: '' });
       });
     });
   });
