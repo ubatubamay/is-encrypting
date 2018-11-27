@@ -59,11 +59,13 @@ router.post('/file_generate', function(req, res, next) {
   
 });
 
+/* Download file */
 router.get('/:file(*)', function(req, res, next){
   var file = req.params.file;
   res.download(file);
 });
 
+/* Upload file */
 router.post('/file_upload', function(req, res, next){
   var formidable = require('formidable');
   var fs = require('fs');
