@@ -73,7 +73,7 @@ router.post('/file_upload', function(req, res, next){
   form.parse(req, function (err, fields, files) {
     var oldpath = files.filetoupload.path;
     var newpath = './public/files_uploaded/' + files.filetoupload.name;
-    fs.rename(oldpath, newpath, function (err) {
+    fs.copyFile(oldpath,'./public/files_uploaded/' + files.filetoupload.name, function (err){
       if (err) throw err;
       var chaveName = files.filetoupload.name.split('.');      
       fs.readFile(newpath, 'utf-8', function (erro, data) {
@@ -104,6 +104,37 @@ router.post('/file_upload', function(req, res, next){
                                 message: '' });
       });
     });
+    // fs.rename(oldpath, newpath, function (err) {
+    //   if (err) throw err;
+    //   var chaveName = files.filetoupload.name.split('.');      
+    //   fs.readFile(newpath, 'utf-8', function (erro, data) {
+    //       if(erro) throw erro;
+          
+    //       var phrase = '';
+    //       var phraseEncripted = data;
+    //       var chave = chaveName[0];
+    //       var sizeKey = chave.length; //5
+    //       var sizePhraseEnc = phraseEncripted.length;
+    //       var j = 0;
+    //       for(var i = 0; i<sizePhraseEnc; i++) {
+    //         var indice = global.arrayIndex.indexOf(phraseEncripted[i]);
+    //         indice = parseInt(indice) - parseInt(chave[j]);
+            
+    //         if( indice < 0 ) {
+    //           indice = indice + 79;
+    //         }
+    //         phrase+= ''+global.arrayIndex[indice];
+    //         j++;
+    //         if(j>=sizeKey) {
+    //           j=0;
+    //         }
+    //       }
+    //       res.render('index', { title: 'IS-Encrypting', 
+    //                             urlFile: '', 
+    //                             decriptedFile: 'Conteúdo decriptado: ' + phrase,
+    //                             message: '' });
+    //   });
+    // });
   });
 });
 
